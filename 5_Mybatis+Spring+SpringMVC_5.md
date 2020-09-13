@@ -67,7 +67,7 @@ public interface IUserDao{
         </environment> 
     </environments>
 <!-- 告知 mybatis 映射配置的位置 --> 
-<mappers> <mapper resource="com/itheima/dao/IUserDao.xml"/></mappers> 
+<mappers><mapper resource="com/itheima/dao/IUserDao.xml"/></mappers> 
 <!-- 基于注解版本-----告知 mybatis 映射配置的位置 -->
 <mappers><mapper class="com.itheima.dao.IUserDao"/></mappers>
 </configuration>
@@ -803,17 +803,17 @@ public class TransactionManager {
 //定义一个 
 DBAssit private DBAssit dbAssit ;
 public void setDbAssit(DBAssit dbAssit) { 
-this.dbAssit = dbAssit;
+	this.dbAssit = dbAssit;
 }
 //开启事务 
 public void beginTransaction() { 
-try {
-	dbAssit.getCurrentConnection().setAutoCommit(false);
-} catch (SQLException e) { 
-	e.printStackTrace();
-} }
+    try {
+        dbAssit.getCurrentConnection().setAutoCommit(false);
+    } catch (SQLException e) { 
+        e.printStackTrace();
+    } }
 //环绕通知
-    public Object transactionAround(  pjp) {
+public Object transactionAround(  pjp) {
         //定义返回值 
         Object rtValue = null; 
         try {
@@ -843,7 +843,7 @@ try {
 ```xml
 <!-- 配置 service --> 
 <bean id="accountService" class="com.itheima.service.impl.AccountServiceImpl">
-<property name="accountDao" ref="accountDao"></property>
+	<property name="accountDao" ref="accountDao"></property>
 </bean>
 <!-- 配置 dao --> 
 <bean id="accountDao" class="com.itheima.dao.impl.AccountDaoImpl">
@@ -862,7 +862,7 @@ try {
     <property name="dbAssit" ref="dbAssit"></property>
 </bean>
 <aop:config>
-    <aop:pointcut expression="execution( public void com.itheima.service.impl.AccountServiceImpl.transfer( java.lang.String, java.lang.String, java.lang.Float)
+    <aop:pointcut expression="execution( public void com.itheima.service.impl.AccountServiceImpl.transfer(java.lang.String, java.lang.String, java.lang.Float)
 )" id="pt1"/>
     <!-- 配置的代码都写在此处 id：给切面提供一个唯一标识。 ref：引用配置好的通知类 bean 的 id。 --> 
     <aop:aspect id="txAdvice" ref="txManager">
@@ -1244,14 +1244,16 @@ public String usePathVariable(@PathVariable("id") Integer id)
 
 ```java
 <a href="springmvc/useRequestHeader">获取请求消息头</a>
-@RequestMapping("/useRequestHeader") public String useRequestHeader(@RequestHeader(value="Accept-Language", required=false)String requestHeader)
+@RequestMapping("/useRequestHeader") 
+public String useRequestHeader(@RequestHeader(value="Accept-Language", required=false)String requestHeader)
 ```
 
 **CookieValue:**用于把指定 cookie 名称的值传入控制器方法参数
 
 ```java
 <a href="springmvc/useCookieValue">绑定 cookie 的值</a>
-@RequestMapping("/useCookieValue") public String useCookieValue(@CookieValue(value="JSESSIONID",required=false)
+@RequestMapping("/useCookieValue") 
+public String useCookieValue(@CookieValue(value="JSESSIONID",required=false)
 String cookieValue)
 ```
 
@@ -1269,12 +1271,12 @@ public class SessionAttributeController {
 		model.addAttribute("age", 31); 
         //跳转之前将数据保存到 username、password 和 age 中
         return "success";
-        @RequestMapping("/testGet") 
-        public String testGet(ModelMap model){ 	     System.out.println(model.get("username")+";"+model.get("password")+";"+model.get("a ge"));
+    @RequestMapping("/testGet") 
+    public String testGet(ModelMap model){ 	     System.out.println(model.get("username")+";"+model.get("password")+";"+model.get("a ge"));
             return "success";
         }
-        @RequestMapping("/testClean") 
-        public String complete(SessionStatus sessionStatus){ 
+    @RequestMapping("/testClean") 
+    public String complete(SessionStatus sessionStatus){ 
             sessionStatus.setComplete(); 
             return "success";
 } }

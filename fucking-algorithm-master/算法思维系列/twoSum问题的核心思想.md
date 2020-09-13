@@ -12,7 +12,6 @@ Two Sum 系列问题在 LeetCode 上有好几道，这篇文章就挑出有代�
 
 ```java
 int[] twoSum(int[] nums, int target) {
-
     for (int i = 0; i < nums.length; i++) 
         for (int j = i + 1; j < nums.length; j++) 
             if (nums[j] == target - nums[i]) 
