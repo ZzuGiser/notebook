@@ -822,7 +822,7 @@ java -jar spring-boot-02-config-02-0.0.1-SNAPSHOT.jar --server.port=8087  --serv
 
     
 
-**==将 类路径下  META-INF/spring.factories 里面配置的所有EnableAutoConfiguration的值加入到了容器中；==**
+**==将类路径下META-INF/spring.factories里面配置的所有EnableAutoConfiguration的值加入到了容器中；==**
 
 ```properties
 # Auto Configure

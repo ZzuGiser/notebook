@@ -111,7 +111,7 @@ mysql-binlog是MySQL数据库的二进制日志，用于记录用户对数据库
 
 ### 1.6 Redis事务使用场景----Redis乐观锁
 
-乐观锁基于CAS（Compare And Swap）思想（比较并替换），是不具有互斥性，不会产生锁等待而消 耗资源，但是需要反复的重试，但也是因为重试的机制，能比较快的响应。因此我们可以利用redis来实现乐观锁。具体思路如下：
+乐观锁基于CAS（Compare And Swap）思想（比较并替换），是不具有互斥性，不会产生锁等待而消耗资源，但是需要反复的重试，但也是因为重试的机制，能比较快的响应。因此我们可以利用redis来实现乐观锁。具体思路如下：
 1、利用redis的watch功能，监控这个redisKey的状态值 
 2、获取redisKey的值 
 3、创建redis事务 
@@ -198,12 +198,6 @@ sentinel特点：
 跳表(skip List)是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)。简单说来跳表也是链表的一种，只不过它在链表的基础上增加了跳跃功能，正是这个跳跃的功能，使得在查找元素时，跳表能够提供O(logN)的时间复杂度。
 跳表(skip List)是一种随机化的数据结构，基于并联的链表，实现简单，插入、删除、查找的复杂度均为O(logN)。简单说来跳表也是链表的一种，只不过它在链表的基础上增加了跳跃功能，正是这个跳跃的功能，使得在查找元素时，跳表能够提供O(logN)的时间复杂度。
 ![](images/Snipaste_2020-04-12_20-18-36.png)
-
-
-
-
-
-
 
 ## 二、消息队列 
 
@@ -470,6 +464,10 @@ ZooKeeper数据模型的结构与Unix文件系统很类似，整体上可以看�
 
 ![](images/Snipaste_2020-03-17_20-52-06.png)
 
+###  Zookeeper——一致性协议:Zab协议
+
+Zab借鉴了Paxos算法，但又不像Paxos那样，是一种通用的分布式一致性算法。它是特别为Zookeeper设计的支持崩溃恢复的原子广播协议。 Zookeeper 客户端会随机的链接到 zookeeper 集群中的一个节点，如果是读请求，就直接从当前节点中读取数据；如果是写请求，那么节点就会向 Leader 提交事务，Leader 接收到事务提交，会广播该事务，只要超过半数节点写入成功，该事务就会被提交。
+
 ## 五 SpringCloud
 
 ![](images/Snipaste_2020-04-11_16-51-38.png)
@@ -478,7 +476,7 @@ ZooKeeper数据模型的结构与Unix文件系统很类似，整体上可以看�
 
 ### 5.1 Eureka
 
-Eureka是微服务中心，本身是一个基于 REST 的服务，主要用于定位运行在 AWS域中的中间层服务，以达到 负载均衡和中间层服务故障转移的目的。
+Eureka是微服务中心，本身是一个基于 REST 的服务，主要用于定位运行在 AWS域中的中间层服务，以达到负载均衡和中间层服务故障转移的目的。
 
 Eureka 就是一个专门用于服务发现的服务器，一些服务注册到该服务器，而另一些服务通过该服务器查找其所要调用执行的服务。可以充当服务发现服务器的组件很多，例 如 Zookeeper、Consul、Eureka 等。
 
@@ -784,13 +782,16 @@ $ sudo docker pull registry.cn-hangzhou.aliyuncs.com/wuhshaoxin/shao:[镜像版�
 
 ## 八 Netty
 
-#### 8.0 NIO
+NIO
 
 NIO三大核心部分：channel(通道)、buffer(通道)、selector(选择器)
 
+ **阻塞非阻塞与同步异步的区别**
 
+1. 同步和异步关注的是消息通信机制，所谓同步，就是在发出一个调用时，在没有得到结果之前，该调用就不返回。但是一旦调用返回，就得到返回值了。而异步则是相反，调用在发出之后，这个调用就直接返回了，所以没有返回结果。换句话说，当一个异步过程调用发出后，调用者不会立刻得到结果。而是在调用发出后，被调用者通过状态、通知来通知调用者，或通过回调函数处理这个调用。你打电话问书店老板有没有《分布式系统》这本书，如果是同步通信机制，书店老板会说，你稍等，”我查一下"，然后开始查啊查，等查好了（可能是5秒，也可能是一天）告诉你结果（返回结果）。而异步通信机制，书店老板直接告诉你我查一下啊，查好了打电话给你，然后直接挂电话了（不返回结果）。然后查好了，他会主动打电话给你。在这里老板通过“回电”这种方式来回调。
+2. 阻塞和非阻塞关注的是程序在等待调用结果（消息，返回值）时的状态。阻塞调用是指调用结果返回之前，当前线程会被挂起。调用线程只有在得到结果之后才会返回。非阻塞调用指在不能立刻得到结果之前，该调用不会阻塞当前线程。你打电话问书店老板有没有《分布式系统》这本书，你如果是阻塞式调用，你会一直把自己“挂起”，直到得到这本书有没有的结果，如果是非阻塞式调用，你不管老板有没有告诉你，你自己先一边去玩了， 当然你也要偶尔过几分钟check一下老板有没有返回结果。在这里阻塞与非阻塞与是否同步异步无关。跟老板通过什么方式回答你结果无关。
 
-#### 8.1 Netty 的使用场景
+ **Netty 的使用场景**
 
 > 构建高性能、低时延的各种 Java 中间件，例如 MQ、分布式服务框架、ESB 消息总线等， Netty 主要作为基础通信框架提供高性能、低时延的通信服务； 
 >
@@ -798,19 +799,138 @@ NIO三大核心部分：channel(通道)、buffer(通道)、selector(选择器)
 >
 > 各领域应用，例如大数据、游戏等，Netty 作为高性能的通信框架用于内部各模块的数据 分发、传输和汇总等，实现模块之间高性能通信。
 
-#### 8.2 Netty 线程模型
+ **Netty 线程模型**
 
-> 首先，Netty 使用 EventLoop 来处理连接上的读写事件，而一个连接上的所有请求都保证 在一个 EventLoop 中被处理，一个 EventLoop 中只有一个 Thread，所以也就实现了一个连 接上的所有事件只会在一个线程中被执行。一个 ventLoopGroup 包含多个 EventLoop，可 以把一个 EventLoop 当做是 Reactor 线程模型中的一个线程，而一个 EventLoopGroup 类似 于一个 ExecutorService
+> 首先，Netty 使用 EventLoop 来处理连接上的读写事件，而一个连接上的所有请求都保证 在一个 EventLoop 中被处理，一个 EventLoop 中只有一个 Thread，所以也就实现了一个连接上的所有事件只会在一个线程中被执行。一个 EventLoopGroup 包含多个 EventLoop，可以把一个 EventLoop 当做是 Reactor 线程模型中的一个线程，而一个 EventLoopGroup 类似 于一个 ExecutorService
 
-#### 8.3 Netty 的零拷贝
+ **Netty 的零拷贝**
 
 “零拷贝”是指计算机操作的过程中，CPU 不需要为数据在内存之间的拷贝消耗资源。而 它通常是指计算机在网络上发送文件时，不需要将文件内容拷贝到用户空间（User Space）而直接在内核空间（Kernel Space）中传输到网络的方式。
 
-**Netty 内部执行流程**
+Netty 的接收和发送 ByteBuffer 采用 DIRECT BUFFERS，使用堆外直接内存进行 Socket 读写，不需要进行字节缓冲区的二次拷贝。如果使用传统的堆内存（HEAP BUFFERS）进行 Socket 读写，JVM 会将堆内存 Buffer 拷贝一份到直接内存中，然后才写入 Socket 中。相比于堆外直接内存，消息在发送过程中多了一次缓冲区的内存拷贝。
 
-1. Netty 的接收和发送 ByteBuffer 采用 DIRECT BUFFERS，使用堆外直接内存进行 Socket 读写，不需要进行字节缓冲区的二次拷贝。如果使用传统的堆内存（HEAP BUFFERS）进行 Socket 读写，JVM 会将堆内存 Buffer 拷贝一份到直接内存中，然后才写入 Socket 中。相比于堆外直接内存，消息在发送过程中多了一次缓冲区的内存拷贝。
-2. Netty 提供了组合 Buffer 对象，可以聚合多个 ByteBuffer 对象，用户可以像操作一 个 Buffer 那样方便的对组合 Buffer 进行操作，避免了传统通过内存拷贝的方式将几个小 Buffer 合并成一个大的 Buffer。
-3. Netty 的文件传输采用了 transferTo 方法，它可以直接将文件缓冲区的数据发送到
+## 九  SpringBoot
 
-## A SpringBoot 案例总结
+**springboot-starter**
 
+### 1、resources目录下新建META-INF文件夹，建立spring.factories，  目的是让spring发现并加载你自己写的东西 
+
+``` java
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=com.jin.lijin_springboot_start_redis.MyRedisAutoConfiguration
+
+```
+
+
+
+### 2、由于需要读取自定义前缀的配置文件，所以定义一个实体类来接收.
+
+``` java
+@ConfigurationProperties("lijin")
+public class MyRedisProperties {
+	
+	private String myIp;
+	private int myPort;
+	public String getMyIp() {
+		return myIp;
+	}
+	public void setMyIp(String myIp) {
+		this.myIp = myIp;
+	}
+	public int getMyPort() {
+		return myPort;
+	}
+	public void setMyPort(int myPort) {
+		this.myPort = myPort;
+	}	
+}
+```
+
+### 3、自定义MyRedisAutoConfiguration，这个类完成组装bean的功能。
+
+``` java
+
+@Configuration
+/*
+ * 当classpath中出现了Jedis这个类时，才会进行相应的配置。
+ * conditional 是有条件的 意思
+ */
+@ConditionalOnClass({ Jedis.class })
+/*
+ * @ConfigurationProperties注解主要用来把properties配置文件转化为bean来使用的，
+ * 而@EnableConfigurationProperties注解的作用是@ConfigurationProperties注解生效。
+ * 如果只配置@ConfigurationProperties注解，在IOC容器中是获取不到properties配置文件转化的bean的。
+ */
+@EnableConfigurationProperties(MyRedisProperties.class)
+public class MyRedisAutoConfiguration {
+ 
+	@Autowired
+	private MyRedisProperties properties;
+ 
+	@Bean
+	public Jedis myRedis() {
+		Jedis jedis = new Jedis(properties.getMyIp(), properties.getMyPort());
+		return  jedis;
+	}
+}
+```
+
+### 4、至此，我们以开发一个简单的自定义的starter。
+
+``` java
+ <dependency>
+      <groupId>com.jin</groupId>
+      <artifactId>lijin-springboot-start-redis</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+lijin.myIp=localhost
+lijin.myPort=6379
+
+
+@SpringBootApplication
+public class DemoApplication implements CommandLineRunner {
+    //注入jedis
+	@Autowired
+	Jedis jedis;
+	public static void main(String[] args) {
+	SpringApplication.run(DemoApplication.class, args);
+	}
+	@Override
+	public void run(String... args) throws Exception {
+System.out.println(jedis.getClient().getHost());
+System.out.println(jedis.getClient().getPort());
+	}
+
+```
+
+## 十  Nginx
+
+**nginx 主要功能：反向代理、负载均衡、动静分离**
+
+**反向代理**：其实客户端对代理是无感知的，因为客户端不需要任何配置就可以访问，我们只需要将请求发送到反向代理服务器，由反向代理服务器去选择目标服务器获取数据后，在返回给客户端，此时反向代理服务器和目标服务器对外就是一个服务器，暴露的是代理服务器地址，隐藏了真实服务器 IP 地址。
+
+**负载均衡**：将请求分发到多个服务器上，将负载分发到不同的服务器，也就是我们所说的负载均衡
+
+**动静分离**：为了加快网站的解析速度，可以把动态页面和静态页面由不同的服务器来解析，加快解析速度。降低原来单个服务器的压力。
+
+![image-20200913213132199](images\image-20200913213132199.png)
+
+说明：全局块、events 块（events 块涉及的指令主要影响 Nginx 服务器与用户的网络连接，常用的设置包括是否开启对多 work process 下的网络连接进行序列化，是否允许同时接收多个网络连接，选取哪种事件驱动模型来处理连接请求，每个 word process 可以同时支持的最大连接数等。）、http块（http 块也可以包括 http 全局块、server 块。）
+
+每个 http 块可以包括多个 server 块，而每个 server 块就相当于一个虚拟主机。而每个 server 块也分为全局 server 块，以及可以同时包含多个 locaton 块。
+**1、全局 server 块**
+最常见的配置是本虚拟机主机的监听配置和本虚拟主机的名称或IP 配置。
+**2、location 块**
+一个 server 块可以配置多个 location 块。
+这块的主要作用是基于 Nginx 服务器接收到的请求字符串（例如 server_name/uri-string），对虚拟主机名称
+（也可以是 IP 别名）之外的字符串（例如 前面的 /uri-string）进行匹配，对特定的请求进行处理。地址定向、数据缓存和应答控制等功能，还有许多第三方模块的配置也在这里进行。
+
+**Nginx 负载均衡**
+
+负载均衡即是将负载分摊到不同的服务单元，既保证服务的可用性，又保证响应足够快，给用户很好的体验。快速增长的访问量和数据流量催生了各式各样的负载均衡产品
+
+![image-20200913214758281](images\image-20200913214758281.png)
+
+**Nginx 动静分离**：简单来说就是把动态跟静态请求分开，不能理解成只是单纯的把动态页面和静态页面物理分离。严格意义上说应该是动态请求跟静态请求分开，可以理解成使用 Nginx 处理静态页面，Tomcat 处理动态页面。动静分离从目前实现角度来讲大致分为两种。
+
+![image-20200913214533339](images\image-20200913214533339.png)

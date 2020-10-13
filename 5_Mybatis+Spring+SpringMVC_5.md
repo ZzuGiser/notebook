@@ -891,7 +891,7 @@ public class TransactionManager{
     
     
 @Before("execution(* com.itheima.service.impl.*.*(..))") 
-public void beginTransaction() { 
+public void beginTransaction(){ 
 try {
 dbAssit.getCurrentConnection().setAutoCommit(false);
 } catch (SQLException e) { 
@@ -1345,3 +1345,18 @@ h. DispatcherServle 通过 model 解析出 ModelAndView()中的参数进行解�
 
 1. 修改 tomcat 配置文件添加编码与工程编码一致。 
 2. 另 外 一 种 方 法 对 参 数 进 行 重 新 编 码 String userName = New String(Request.getParameter(“userName”).getBytes(“ISO8859-1”), “utf-8”);
+
+## 补充web开发
+
+**servlet 入门**
+
+Tomcat服务器也是Java编写的，启动Tomcat服务器实际上是启动Java虚拟机，执行Tomcat的`main()`方法，然后由Tomcat负责加载我们的`.war`文件，并创建一个`HelloServlet`实例，最后以多线程的模式来处理HTTP请求。如果Tomcat服务器收到的请求路径是`/`（假定部署文件为ROOT.war），就转发到`HelloServlet`并传入`HttpServletRequest`和`HttpServletResponse`两个对象。
+
+因为我们编写的Servlet并不是直接运行，而是由Web服务器加载后创建实例运行，所以，类似Tomcat这样的Web服务器也称为Servlet容器。
+
+在Servlet容器中运行的Servlet具有如下特点：
+
+- 无法在代码中直接通过new创建Servlet实例，必须由Servlet容器自动创建Servlet实例；
+- Servlet容器只会给每个Servlet类创建唯一实例；
+- Servlet容器会使用多线程执行`doGet()`或`doPost()`方法。
+

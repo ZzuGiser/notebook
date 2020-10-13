@@ -118,8 +118,6 @@ PS：这就是普通双向链表的实现，为了让读者集中精力理解 LR
 
 到这里就能回答刚才“为什么必须要用双向链表”的问题了，因为我们需要删除操作。删除一个节点不光要得到该节点本身的指针，也需要操作其前驱节点的指针，而双向链表才能支持直接查找前驱，保证操作的时间复杂度 $O(1)$。
 
-有了双向链表的实现，我们只需要在 LRU 算法中把它和哈希表结合起来即可。我们先把逻辑理清楚：
-
 ```java
 // key 映射到 Node(key, val)
 HashMap<Integer, Node> map;
@@ -214,6 +212,114 @@ if (cap == cache.size()) {
 当缓存容量已满，我们不仅仅要删除最后一个 Node 节点，还要把 map 中映射到该节点的 key 同时删除，而这个 key 只能由 Node 得到。如果 Node 结构中只存储 val，那么我们就无法得知 key 是什么，就无法删除 map 中的键，造成错误。
 
 至此，你应该已经掌握 LRU 算法的思想和实现了，很容易犯错的一点是：处理链表节点的同时不要忘了更新哈希表中对节点的映射。
+
+``` java
+import java.util.*;
+
+
+public class Solution {
+    /**
+     * lru design
+     * @param operators int整型二维数组 the ops
+     * @param k int整型 the k
+     * @return int整型一维数组
+     */
+    public static class DeNode{
+        int key,val;
+        public DeNode pre,next;
+        DeNode(int k,int value){
+            key = k;
+            val = value;
+        }
+        
+    }
+    
+    
+    static class DoubleList{
+         int size;
+         DeNode first,last;
+        {
+            first = new DeNode(0,0);
+            last = new DeNode(0,0);
+            first.next = last;
+            last.pre = first;
+        }
+        public void delete(DeNode node){
+            node.pre.next = node.next;
+            node.next.pre = node.pre;
+            size--;
+            
+        }
+        public void add(DeNode node){
+            DeNode temp = first.next;
+            first.next = node;
+            node.pre = first;
+            node.next = temp;
+            temp.pre = node;
+            size++;
+        }
+        public DeNode removeLast(){
+            if(last.pre==first) return null;
+            DeNode tar = last.pre;
+            delete(tar);
+            
+            return tar;
+        }
+        public int getsize(){
+            return size;
+        }
+    }
+    public HashMap<Integer,DeNode> map = new HashMap<>();
+    public DoubleList list = new DoubleList();
+    int max;
+    
+    public void set(int key,int val){
+        DeNode newnode = new DeNode(key,val);
+        if(map.containsKey(key)){
+            DeNode old = map.get(key);
+            list.delete(old);
+            map.remove(key);
+            list.add(newnode);
+            map.put(key,newnode);
+        }else{
+            if(list.getsize()==max){
+                DeNode rm = list.removeLast();
+                map.remove(rm.key);
+                
+            }
+            list.add(newnode);
+            map.put(key,newnode);
+        }
+        
+    }
+    public int get(int key){
+        DeNode tar = map.get(key);
+        if(tar==null) return -1;
+        list.delete(tar);
+        list.add(tar);
+        return tar.val;
+    }
+    public int[] LRU (int[][] operators, int k) {
+        // write code here
+        max = k;
+        int len = operators.length;
+        int[] ans = new int[len];
+        int index = 0;
+        ArrayList<Integer> res = new ArrayList<>();
+        for(int i=0;i<len;i++){
+            if(operators[i][0]==1){
+                set(operators[i][1],operators[i][2]);
+            }else{
+                ans[index++] = get(operators[i][1]);
+            }
+        }
+        //int size = res.size();
+        return Arrays.copyOf(ans,index);
+    }
+}
+```
+
+
 
 **致力于把算法讲清楚！欢迎关注我的微信公众号 labuladong，查看更多通俗易懂的文章**：
 

@@ -29,7 +29,7 @@ int[] twoSum(int[] nums, int target) {
 ```java
 int[] twoSum(int[] nums, int target) {
     int n = nums.length;
-    index<Integer, Integer> index = new HashMap<>();
+    Map<Integer, Integer> index = new HashMap<>();
     // 构造一个哈希表：元素映射到相应的索引
     for (int i = 0; i < n; i++)
         index.put(nums[i], i);

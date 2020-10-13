@@ -105,6 +105,8 @@ ON s.class_id = c.id;
 
 ```
 
+证名 mysql 的 join 默认是 inner join。 
+
 INNER JOIN是选出两张表都存在的记录：
 
 ![inner-join](https://www.liaoxuefeng.com/files/attachments/1246892164662976/l)
@@ -156,7 +158,7 @@ INSERT INTO students (class_id, name, gender, score) VALUES
  
  #插入或替换
  REPLACE INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明', 'F', 99);
- #插入或更新
+ #插入或更新 
  INSERT INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明', 'F', 99) ON DUPLICATE KEY UPDATE name='小明', gender='F', score=99;
  #若id=1的记录不存在，INSERT语句将插入新记录，否则，不执行任何操作。
  INSERT IGNORE INTO students (id, class_id, name, gender, score) VALUES (1, 1, '小明', 'F', 99);
@@ -179,7 +181,21 @@ INSERT INTO statistics (class_id, average) SELECT class_id, AVG(score) FROM stud
  
 ```
 
+**mysql where和having的区别**
 
+简单描述：需要查询一个数量count，于是做分组查询后，发现有的数据没有过滤掉，于是就想加上过滤条件，就在group by后边写了where ，发现不好使，直接就报错了，查了一下，where只能写在group by前边，要想在后边加限制条件，应该使用having关键字.
+
+```mysql
+select sum(score) from student where gender='boy' group by name having sum(score)>210
+
+#只可以用where，不可以用having的情况
+select name from goods where price> 100
+select name from goods having price> 100 #报错！！！因为select没有筛选出price 字段，having不能用,而where是对表进行检索price。100
+
+#只可以用where，不可以用having的情况
+select id, avg(price) as agprice from goods where agprice>100 group by id #报错！！因为from goods这表里面没有agprice这个字段
+
+```
 
 ### 5、事务
 
@@ -416,6 +432,12 @@ PS :Page是Innodb存储的最基本结构，也是Innodb磁盘管理的最小单
 
 索引优化 where 字段 、组合索引 （最左前缀） 、 索引下推 （非选择行不加锁） 、索引覆盖（不回表） on 两边 排序 分组统计 不要用 * LIMIT优化 原SQL
 
+#### 6.5 MVCC多版本并发控制机制
+
+ Multi-Version Concurrency Control,翻译为中文即 多版本并发控制 .
+
+ MVCC的实现，通过保存数据在某个时间点的快照来实现的。这意味着一个事务无论运行多长时间，在同一个事务里能够看到数据一致的视图。根据事务开始的时间不同，同时也意味着在同一个时刻不同事务看到的相同表里的数据可能是不同的。 
+
 
 ### 7  索引
 
@@ -567,6 +589,33 @@ using where（重要）：表示存储引擎返回的记录并不是所有的都
 
 ![](images/Snipaste_2020-03-15_11-11-00.png)
 
+#### 补充
+
+**MySQL B+树索引和哈希索引的区别**
+
+ B+树是一个平衡的多叉树，从根节点到每个叶子节点的高度差值不超过1，而且同层级的节点间有指针相互链接。 
+
+ 哈希索引就是采用一定的哈希算法，把键值换算成新的哈希值，检索时不需要类似B+树那样从根节点到叶子节点逐级查找，只需一次哈希算法即可立刻定位到相应的位置，速度非常快。 
+
+``` xml
+- 如果是等值查询，那么哈希索引明显有绝对优势，因为只需要经过一次算法即可找到相应的键值；当然了，这个前提是，键值都是唯一的。如果键值不是唯一的，就需要先找到该键所在位置，然后再根据链表往后扫描，直到找到相应的数据；
+- 从示意图中也能看到，如果是范围查询检索，这时候哈希索引就毫无用武之地了，因为原先是有序的键值，经过哈希算法后，有可能变成不连续的了，就没办法再利用索引完成范围查询检索；
+- 同理，哈希索引也没办法利用索引完成排序，以及like ‘xxx%’ 这样的部分模糊查询（这种部分模糊查询，其实本质上也是范围查询）；
+- 哈希索引也不支持多列联合索引的最左匹配规则；
+- B+树索引的关键字检索效率比较平均，不像B树那样波动幅度大，在有大量重复键值情况下，哈希索引的效率也是极低的，因为存在所谓的哈希碰撞问题。
+```
+
+**唯一索引和主键索引区别**
+
+```xml
+主键是一种约束，唯一索引是一种索引，两者在本质上是不同的。
+主键创建后一定包含一个唯一性索引，唯一性索引并不一定就是主键。
+唯一性索引列允许空值，而主键列不允许为空值。
+主键列在创建时，已经默认为空值 + 唯一索引了。
+主键可以被其他表引用为外键，而唯一索引不能。
+一个表最多只能创建一个主键，但可以创建多个唯一索引。
+```
+
 
 
 ###  8  Mysql锁介绍
@@ -630,7 +679,7 @@ id: 2 4 5
 
 ![](images/Snipaste_2020-03-15_16-53-21.png)
 
-主从集群的问题：只有主对外工作，从不对外工作。主既要负责写操作，也要负责读操作。 对于主从集群来说，只是保证了数据的安全备份。 **主：负责部分读 、写 从：负责读**
+主从集群的问题：只有主对外工作，从不对外工作。主既要负责写操作，也要负责读操作。 对于主从集群来说，只是保证了数据的安全备份。 **主：负责部分读 、写 。从：负责读**
 
 #### 9.1 分库分表介绍
 
@@ -667,11 +716,30 @@ Sharding JDBC核心概念 数据分片：
 
 ![](images/Snipaste_2020-03-15_17-09-00.png)
 
+一致性Hash原理
 
+ 但是普通的余数hash（hash(比如用户id)%服务器机器数）算法伸缩性很差，当新增或者下线服务器机器时候，用户id与服务器的映射关系会大量失效。一致性hash则利用hash环对其进行了改进。 
 
+当ip2的服务器挂了的时候，一致性hash环大致如下图：
 
+![img](https:////upload-images.jianshu.io/upload_images/5879294-0e71e72e998158ff.png?imageMogr2/auto-orient/strip|imageView2/2/w/763/format/webp)
 
+根据顺时针规则可知user1,user2的请求会被服务器ip3进行处理，而其它用户的请求对应的处理服务器不变，也就是只有之前被ip2处理的一部分用户的映射关系被破坏了，并且其负责处理的请求被顺时针下一个节点委托处理。
 
+当新增一个ip5的服务器后，一致性hash环大致如下图：
+
+![img](https:////upload-images.jianshu.io/upload_images/5879294-a29c3cf3375aa24d.png?imageMogr2/auto-orient/strip|imageView2/2/w/680/format/webp)
+
+根据顺时针规则可知之前user5的请求应该被ip5服务器处理，现在被新增的ip5服务器处理，其他用户的请求处理服务器不变，也就是新增的服务器顺时针最近的服务器的一部分请求会被新增的服务器所替代。
+
+**虚拟节点**
+
+当服务器节点比较少的时候会出现上节所说的一致性hash倾斜的问题，一个解决方法是多加机器，但是加机器是有成本的，那么就加虚拟节点，比如上面三个机器，每个机器引入1个虚拟节点后的一致性hash环的图如下：
+
+![img](https:////upload-images.jianshu.io/upload_images/5879294-9b03a4dabeb1aa10.png?imageMogr2/auto-orient/strip|imageView2/2/w/707/format/webp)
+
+其中ip1-1是ip1的虚拟节点，ip2-1是ip2的虚拟节点，ip3-1是ip3的虚拟节点。
+ 可知当物理机器数目为M，虚拟节点为N的时候，实际hash环上节点个数为M*N。比如当客户端计算的hash值处于ip2和ip3或者处于ip2-1和ip3-1之间时候使用ip3服务器进行处理。
 
 ### P2 Mysql笔试问题
 
