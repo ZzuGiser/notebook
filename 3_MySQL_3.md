@@ -720,13 +720,13 @@ Sharding JDBC核心概念 数据分片：
 
 当ip2的服务器挂了的时候，一致性hash环大致如下图：
 
-![img](https:////upload-images.jianshu.io/upload_images/5879294-0e71e72e998158ff.png?imageMogr2/auto-orient/strip|imageView2/2/w/763/format/webp)
+![img](https://upload-images.jianshu.io/upload_images/5879294-0e71e72e998158ff.png)
 
 根据顺时针规则可知user1,user2的请求会被服务器ip3进行处理，而其它用户的请求对应的处理服务器不变，也就是只有之前被ip2处理的一部分用户的映射关系被破坏了，并且其负责处理的请求被顺时针下一个节点委托处理。
 
 当新增一个ip5的服务器后，一致性hash环大致如下图：
 
-![img](https:////upload-images.jianshu.io/upload_images/5879294-a29c3cf3375aa24d.png?imageMogr2/auto-orient/strip|imageView2/2/w/680/format/webp)
+![img](https://upload-images.jianshu.io/upload_images/5879294-a29c3cf3375aa24d.png)
 
 根据顺时针规则可知之前user5的请求应该被ip5服务器处理，现在被新增的ip5服务器处理，其他用户的请求处理服务器不变，也就是新增的服务器顺时针最近的服务器的一部分请求会被新增的服务器所替代。
 
@@ -734,7 +734,7 @@ Sharding JDBC核心概念 数据分片：
 
 当服务器节点比较少的时候会出现上节所说的一致性hash倾斜的问题，一个解决方法是多加机器，但是加机器是有成本的，那么就加虚拟节点，比如上面三个机器，每个机器引入1个虚拟节点后的一致性hash环的图如下：
 
-![img](https:////upload-images.jianshu.io/upload_images/5879294-9b03a4dabeb1aa10.png?imageMogr2/auto-orient/strip|imageView2/2/w/707/format/webp)
+![img](https://upload-images.jianshu.io/upload_images/5879294-9b03a4dabeb1aa10.png)
 
 其中ip1-1是ip1的虚拟节点，ip2-1是ip2的虚拟节点，ip3-1是ip3的虚拟节点。
  可知当物理机器数目为M，虚拟节点为N的时候，实际hash环上节点个数为M*N。比如当客户端计算的hash值处于ip2和ip3或者处于ip2-1和ip3-1之间时候使用ip3服务器进行处理。
