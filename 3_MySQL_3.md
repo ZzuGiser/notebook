@@ -746,7 +746,7 @@ Sharding JDBC核心概念 数据分片：
 Employee表包含所有员工信息，每个员工有其对应的 Id, salary 和 department Id。
 
 ```
-Employee 表包含所有员工信息，每个员工有其对应的 Id, salary 和 department Id。
+Employee 表包含所有员工信息，每个员工有其对应的 Id, salary 和 department Id。
 
 +----+-------+--------+--------------+
 | Id | Name  | Salary | DepartmentId |
@@ -757,7 +757,7 @@ Employee 表包含所有员工信息，每个员工有其对应的 Id, salary �
 | 4  | Max   | 90000  | 1            |
 +----+-------+--------+--------------+
 
-Department 表包含公司所有部门的信息。
+Department 表包含公司所有部门的信息。
 
 +----+----------+
 | Id | Name     |
@@ -806,7 +806,7 @@ group by DepartmentId );
 | 5  | 4.00  |
 | 6  | 3.65  |
 +----+-------+
-例如，根据上述给定的 Scores 表，你的查询应该返回（按分数从高到低排列）：
+例如，根据上述给定的 Scores 表，你的查询应该返回（按分数从高到低排列）：
 
 +-------+------+
 | Score | Rank |
@@ -814,7 +814,7 @@ group by DepartmentId );
 | 4.00  | 1    |
 | 4.00  | 1    |
 | 3.85  | 2    |
-| 3.65  | 3    |
+| 3.65  | 3    |
 | 3.65  | 3    |
 | 3.50  | 4    |
 +-------+------+
